@@ -22,3 +22,17 @@ production:
   stats_daily_rebuild:
     command: "system('ruby', Rails.root.join('script', 'build_stats.rb').to_s)"
     schedule: every day at 4am
+  assemble_topic_summary_batches:
+    class: AssembleTopicSummaryBatchJob
+    schedule: every 15 minutes
+  poll_topic_summary_batches:
+    class: PollTopicSummaryBatchesJob
+    schedule: every 15 minutes
+
+development:
+  assemble_topic_summary_batches:
+    class: AssembleTopicSummaryBatchJob
+    schedule: every 15 minutes
+  poll_topic_summary_batches:
+    class: PollTopicSummaryBatchesJob
+    schedule: every 15 minutes
