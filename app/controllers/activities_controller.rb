@@ -7,7 +7,7 @@ class ActivitiesController < ApplicationController
     @search_query = params[:q].to_s.strip
     @activities = base_scope
                     .then { |scope| apply_query(scope) }
-                    .includes(subject: [ :topic, { message: :sender } ])
+                    .includes(:subject)
                     .order(created_at: :desc)
                     .limit(100)
     mark_shown_as_read!(@activities)
@@ -34,7 +34,11 @@ class ActivitiesController < ApplicationController
     message_query = scope.joins("INNER JOIN messages ON messages.id = activities.subject_id AND activities.subject_type = 'Message'")
                          .where("messages.body ILIKE ? OR messages.subject ILIKE ?", "%#{@search_query}%", "%#{@search_query}%")
 
-    Activity.from("(#{note_query.to_sql} UNION #{message_query.to_sql}) AS activities")
+    summary_query = scope.joins("INNER JOIN topic_summaries ON topic_summaries.id = activities.subject_id AND activities.subject_type = 'TopicSummary'")
+                         .joins("INNER JOIN topics ON topics.id = topic_summaries.topic_id")
+                         .where("topics.title ILIKE ? OR topic_summaries.content::text ILIKE ?", "%#{@search_query}%", "%#{@search_query}%")
+
+    Activity.from("(#{note_query.to_sql} UNION #{message_query.to_sql} UNION #{summary_query.to_sql}) AS activities")
   end
 
   def mark_shown_as_read!(activities)

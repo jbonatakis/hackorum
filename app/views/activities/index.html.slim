@@ -39,6 +39,12 @@
             .activity-snippet
               strong> = subject.subject
               = truncate(subject.body, length: 140)
+        - elsif subject.is_a?(TopicSummary)
+          .activity-body
+            .activity-title
+              = link_to(subject.topic.title, topic_path(subject.topic, anchor: "topic-summary"))
+            .activity-snippet
+              = "Covers #{pluralize(subject.source_message_count, 'message')} through ##{subject.source_message_count}"
         - else
           .activity-body
             span.activity-missing Content not available anymore.

@@ -10,6 +10,8 @@ module ActivitiesHelper
       else
         "Topic message received"
       end
+    when "ai_summary_ready"
+      "Summary ready"
     else
       activity.activity_type.humanize
     end
