@@ -26,6 +26,18 @@ Rails.application.routes.draw do
     resources :features, only: [ :index, :show ], param: :name do
       resources :enrollments, only: [ :create, :destroy ], param: :user_id, controller: "feature_enrollments"
     end
+    resource :ai_summary_operations, only: [ :show ] do
+      post :flush
+      post :poll
+      post :pause_requests
+      post :resume_requests
+      post :pause_submissions
+      post :resume_submissions
+      post :retry_generation
+      post :cancel_generation
+      post :remove_summary
+      post :regenerate_topic
+    end
     mount PgHero::Engine, at: "/pghero" if defined?(PgHero)
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

@@ -41,6 +41,18 @@ Task shortcuts:
 * `task sim-email-once`
 * `task sim-email-stream`
 
+### AI topic summaries (development)
+
+AI summary requests and provider submissions are independently disabled by default. Configure `OPENAI_API_KEY`, set a hard budget in integer microdollars, and enable the two switches in `.env.development` only when intentionally testing paid generation:
+
+```dotenv
+AI_SUMMARY_REQUESTS_ENABLED=true
+AI_SUMMARY_SUBMISSIONS_ENABLED=true
+AI_SUMMARY_MONTHLY_HARD_BUDGET_MICROUSD=4000000 # $4.00
+```
+
+Use `bin/rails ai_summaries:status` for queue and budget status, `bin/rails ai_summaries:flush` to force an eligible batch, and `/admin/ai_summary_operations` for the minimal admin view. Keep a provider-side project or API-key spending ceiling below the available OpenAI balance as defense in depth. Disabling submissions leaves queued work intact; already submitted batches continue to be polled and reconciled.
+
 ### IMAP worker
 
 The "production" IMAP worker which pulls actual mailing list messages from an IMAP label can be also run locally.

@@ -1,0 +1,58 @@
+- content_for :title, "AI Summary Operations"
+
+.settings-page
+  h1 AI Summary Operations
+
+  .ai-ops-actions
+    = button_to "Flush eligible work", flush_admin_ai_summary_operations_path, method: :post, class: "button button-primary button-small"
+    = button_to "Poll completed batches", poll_admin_ai_summary_operations_path, method: :post, class: "button button-secondary button-small"
+    - if @status[:requests_enabled]
+      = button_to "Pause requests", pause_requests_admin_ai_summary_operations_path, method: :post, class: "button button-secondary button-small"
+    - else
+      = button_to "Clear request pause", resume_requests_admin_ai_summary_operations_path, method: :post, class: "button button-secondary button-small"
+    - if @status[:submissions_enabled]
+      = button_to "Pause submissions", pause_submissions_admin_ai_summary_operations_path, method: :post, class: "button button-secondary button-small"
+    - else
+      = button_to "Clear submission pause", resume_submissions_admin_ai_summary_operations_path, method: :post, class: "button button-secondary button-small"
+
+  dl.ai-ops-stats
+    dt Queued
+    dd = @status[:queued_count]
+    dt Oldest queued
+    dd = @status[:oldest_queued_at] ? smart_time_display(@status[:oldest_queued_at]) : "None"
+    dt Submitted or processing
+    dd = @status[:submitted_count]
+    dt Provider batches
+    dd = @status[:provider_batch_count]
+    dt Completed
+    dd = @status[:completed_count]
+    dt Terminal failures
+    dd = @status[:failed_count]
+    dt Unsupported
+    dd = @status[:unsupported_count]
+    dt Unique requesters
+    dd = @status[:requester_count]
+    dt Monthly committed spend
+    dd = number_to_currency(@status[:monthly_spend_microusd] / 1_000_000.0)
+    dt Monthly hard limit
+    dd = number_to_currency(@status[:monthly_budget_microusd] / 1_000_000.0)
+
+  h2 Recent failures
+  - if @status[:recent_failures].any?
+    .ai-ops-table
+      table
+        thead
+          tr
+            th Topic
+            th State
+            th Category
+            th Updated
+        tbody
+          - @status[:recent_failures].each do |generation|
+            tr
+              td = link_to generation.topic.title, topic_path(generation.topic)
+              td = generation.state
+              td = generation.failure_category
+              td = smart_time_display(generation.updated_at)
+  - else
+    p No summary failures recorded.
