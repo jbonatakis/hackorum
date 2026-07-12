@@ -17,6 +17,10 @@ class User < ApplicationRecord
   has_many :saved_search_preferences
   has_many :outgoing_drafts, dependent: :destroy
   has_many :user_features, dependent: :destroy
+  has_many :topic_summary_requests, dependent: :destroy
+  has_many :requested_topic_summary_generations,
+           through: :topic_summary_requests,
+           source: :topic_summary_generation
 
   enum :mention_restriction, { anyone: "anyone", teammates_only: "teammates_only" }, default: :anyone
 

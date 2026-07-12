@@ -1,6 +1,7 @@
 class Feature
   ALL = {
-    email_sending: "Email sending"
+    email_sending: "Email sending",
+    ai_topic_summaries: "Topic summaries"
   }.freeze
 
   NAMES = ALL.keys.map(&:to_s).freeze
