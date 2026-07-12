@@ -72,6 +72,7 @@ Rails.application.routes.draw do
     delete "send_auth/:identity_id", to: "send_auth#destroy", as: :send_auth
   end
   resources :topics, only: [ :index, :show ] do
+    resources :ai_summary_requests, only: [ :create ]
     collection do
       get :search
       get :user_state_frame
