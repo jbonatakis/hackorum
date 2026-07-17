@@ -33,6 +33,8 @@ class Topic < ApplicationRecord
   has_many :mailing_lists, through: :topic_mailing_lists
   has_many :commit_topics, dependent: :destroy
   has_many :commits, through: :commit_topics
+  has_many :topic_summary_generations, dependent: :destroy
+  has_many :topic_summaries, dependent: :destroy
 
   scope :active, -> { where(merged_into_topic_id: nil) }
   scope :merged, -> { where.not(merged_into_topic_id: nil) }

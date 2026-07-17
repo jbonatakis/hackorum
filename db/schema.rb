@@ -871,6 +871,72 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_18_120000) do
     t.index ["user_id"], name: "index_topic_stars_on_user_id"
   end
 
+  create_table "topic_summaries", force: :cascade do |t|
+    t.bigint "topic_summary_generation_id", null: false
+    t.bigint "topic_id", null: false
+    t.bigint "last_message_id", null: false
+    t.integer "source_message_count", null: false
+    t.string "source_fingerprint", null: false
+    t.jsonb "content", default: {}, null: false
+    t.string "provider", null: false
+    t.string "model", null: false
+    t.string "prompt_version", null: false
+    t.string "schema_version", null: false
+    t.bigint "input_tokens"
+    t.bigint "output_tokens"
+    t.bigint "cost_microusd"
+    t.boolean "current", default: true, null: false
+    t.datetime "generated_at", null: false
+    t.datetime "removed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "source_message_ids", default: [], null: false, array: true
+    t.index ["last_message_id"], name: "index_topic_summaries_on_last_message_id"
+    t.index ["topic_id", "generated_at"], name: "index_topic_summaries_on_topic_id_and_generated_at"
+    t.index ["topic_id", "source_fingerprint"], name: "index_topic_summaries_on_topic_id_and_source_fingerprint"
+    t.index ["topic_id"], name: "idx_topic_summaries_one_current", unique: true, where: "((current = true) AND (removed_at IS NULL))"
+    t.index ["topic_id"], name: "index_topic_summaries_on_topic_id"
+    t.index ["topic_summary_generation_id"], name: "index_topic_summaries_on_topic_summary_generation_id", unique: true
+  end
+
+  create_table "topic_summary_generations", force: :cascade do |t|
+    t.bigint "topic_id", null: false
+    t.string "state", default: "queued", null: false
+    t.integer "source_message_count"
+    t.bigint "last_message_id"
+    t.string "source_fingerprint"
+    t.bigint "estimated_input_tokens"
+    t.bigint "estimated_output_tokens"
+    t.bigint "estimated_cost_microusd"
+    t.bigint "actual_input_tokens"
+    t.bigint "actual_output_tokens"
+    t.bigint "actual_cost_microusd"
+    t.string "provider"
+    t.string "model"
+    t.string "provider_batch_id"
+    t.string "provider_item_id"
+    t.string "prompt_version"
+    t.string "schema_version"
+    t.integer "attempts", default: 0, null: false
+    t.string "failure_category"
+    t.datetime "prepared_at"
+    t.datetime "submitted_at"
+    t.datetime "processing_at"
+    t.datetime "completed_at"
+    t.datetime "failed_at"
+    t.datetime "cancelled_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "source_message_ids", array: true
+    t.datetime "next_attempt_at"
+    t.index ["last_message_id"], name: "index_topic_summary_generations_on_last_message_id"
+    t.index ["provider_batch_id"], name: "index_topic_summary_generations_on_provider_batch_id"
+    t.index ["state"], name: "index_topic_summary_generations_on_state"
+    t.index ["topic_id", "source_fingerprint"], name: "idx_topic_summary_generations_source", where: "(source_fingerprint IS NOT NULL)"
+    t.index ["topic_id"], name: "idx_topic_summary_generations_one_active", unique: true, where: "((state)::text = ANY ((ARRAY['queued'::character varying, 'submitted'::character varying, 'processing'::character varying])::text[]))"
+    t.index ["topic_id"], name: "index_topic_summary_generations_on_topic_id"
+  end
+
   create_table "topics", force: :cascade do |t|
     t.string "title", null: false
     t.bigint "creator_id", null: false
@@ -1017,6 +1083,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_18_120000) do
   add_foreign_key "topic_participants", "topics"
   add_foreign_key "topic_stars", "topics"
   add_foreign_key "topic_stars", "users"
+  add_foreign_key "topic_summaries", "messages", column: "last_message_id"
+  add_foreign_key "topic_summaries", "topic_summary_generations"
+  add_foreign_key "topic_summaries", "topics"
+  add_foreign_key "topic_summary_generations", "messages", column: "last_message_id"
+  add_foreign_key "topic_summary_generations", "topics"
   add_foreign_key "topics", "aliases", column: "creator_id"
   add_foreign_key "topics", "messages", column: "last_message_id"
   add_foreign_key "topics", "people", column: "creator_person_id"
