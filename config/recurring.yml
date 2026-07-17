@@ -25,3 +25,23 @@ production:
   database_maintenance:
     class: DatabaseMaintenanceJob
     schedule: every day at 5am
+  schedule_automatic_topic_summaries:
+    class: ScheduleAutomaticTopicSummariesJob
+    schedule: every day at 5am
+  assemble_topic_summary_batches:
+    class: AssembleTopicSummaryBatchJob
+    schedule: every 15 minutes
+  poll_topic_summary_batches:
+    class: PollTopicSummaryBatchesJob
+    schedule: every 15 minutes
+
+development:
+  schedule_automatic_topic_summaries:
+    class: ScheduleAutomaticTopicSummariesJob
+    schedule: every day at 5am
+  assemble_topic_summary_batches:
+    class: AssembleTopicSummaryBatchJob
+    schedule: every 15 minutes
+  poll_topic_summary_batches:
+    class: PollTopicSummaryBatchesJob
+    schedule: every 15 minutes
