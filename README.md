@@ -42,6 +42,22 @@ Task shortcuts:
 * `task sim-email-once`
 * `task sim-email-stream`
 
+### Topic summaries (development)
+
+Automatic discovery and provider submission are independently disabled by default. Configure `OPENAI_API_KEY`, set a hard budget in integer microdollars, and set the rollout timestamp before intentionally testing paid generation:
+
+```dotenv
+AI_SUMMARY_AUTOMATION_ENABLED=true
+AI_SUMMARY_AUTOMATION_STARTED_AT=2026-07-16T00:00:00Z
+AI_SUMMARY_SUBMISSIONS_ENABLED=true
+AI_SUMMARY_MIN_MESSAGES=10
+AI_SUMMARY_MONTHLY_HARD_BUDGET_MICROUSD=4000000 # $4.00
+```
+
+The daily scheduler considers only canonical topics with sent activity at or after `AI_SUMMARY_AUTOMATION_STARTED_AT`. It queues an initial summary after ten sent messages and queues stale-summary replacements without requiring another ten messages. Run `bin/rails ai_summaries:preview` before enabling automation to inspect candidate volume without creating work.
+
+Use `bin/rails ai_summaries:status` for queue and budget status, `bin/rails ai_summaries:schedule` to enqueue a discovery run, and `bin/rails ai_summaries:flush` to force an eligible provider batch. The admin surface is available at `/admin/ai_summary_operations`. Keep a provider-side project or API-key spending ceiling below the available balance as defense in depth. Pausing automatic scheduling creates no new generations; disabling submissions leaves queued work intact; already submitted batches continue to be polled and reconciled.
+
 ### IMAP worker
 
 The "production" IMAP worker which pulls actual mailing list messages from an IMAP label can be also run locally.
