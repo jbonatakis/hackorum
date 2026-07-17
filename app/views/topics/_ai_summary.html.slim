@@ -1,0 +1,42 @@
+- summary = state.summary
+- sections = [["overview", "Overview"], ["key_points", "Key points"], ["conclusions", "Agreement or conclusions"], ["disagreements_and_concerns", "Disagreements and concerns"], ["open_questions", "Open questions"], ["current_status_or_next_steps", "Current status or next steps"]]
+
+section.ai-summary id="topic-summary"
+  .ai-summary-header
+    h2 Topic Summary
+
+  - if summary
+    .ai-summary-meta
+      span = "Generated #{time_ago_in_words(summary.generated_at)} ago"
+      span = "Covers #{pluralize(summary.source_message_count, 'message')} through ##{summary.source_message_count}"
+    - if state.uncovered_count.positive?
+      p.ai-summary-stale
+        = "There #{state.uncovered_count == 1 ? 'is' : 'are'} #{pluralize(state.uncovered_count, 'newer message')}."
+    - preview_claim = sections.filter_map { |key, _| summary.content[key]&.first }.first
+    - if preview_claim
+      p.ai-summary-preview = preview_claim["text"]
+    details.ai-summary-full
+      summary
+        span.ai-summary-toggle-closed Show full summary
+        span.ai-summary-toggle-open Hide full summary
+      - sections.each do |key, heading|
+        - claims = summary.content[key]
+        - if claims.present?
+          .ai-summary-section
+            h3 = heading
+            - claims.each do |claim|
+              p
+                = claim["text"]
+                - references = claim["message_ids"].filter_map { |id| message_numbers[id] ? link_to("##{message_numbers[id]}", "#message-#{id}") : nil }
+                - if references.any?
+                  span.ai-summary-references< = safe_join(references, ", ")
+      p.ai-summary-disclaimer AI-generated summaries may omit context or contain mistakes. Follow the message references to verify important details.
+
+    - if state.status == :updating
+      p.ai-summary-status An updated summary is in progress. This summary remains available while you wait.
+  - else
+    - case state.status
+    - when :processing
+      p.ai-summary-status A topic summary is being generated.
+    - else
+      p.ai-summary-status A topic summary is queued for this discussion.
