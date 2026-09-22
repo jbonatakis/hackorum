@@ -17,7 +17,7 @@
         - commit_rows.each do |row|
           - commit = row[:commit]
           tr
-            td.activity-types
+            td
               - if show_members
                 - row[:member_credits].each do |credit|
                   - member_alias = credit[:person].default_alias

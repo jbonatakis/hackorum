@@ -113,7 +113,7 @@ RSpec.describe 'Team commit activity', type: :request do
       rows = doc.css('table.commit-activity-table tbody tr')
       expect(rows.size).to eq(1)
 
-      credits = rows.first.css('td.activity-types .commit-member-credit')
+      credits = rows.first.css('td .commit-member-credit')
       expect(credits.size).to eq(2)
 
       # one tuple per member: separate per-attribute lists would still pass if
