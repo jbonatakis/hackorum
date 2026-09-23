@@ -1,0 +1,112 @@
+.ai-summary {
+  margin: var(--spacing-6) var(--spacing-4);
+  padding: var(--spacing-5);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  background: var(--color-bg-card);
+  color: var(--color-text-secondary);
+}
+
+.ai-summary-header,
+.ai-summary-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.ai-summary-header h2,
+.ai-summary-section h3 {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.ai-summary-meta,
+.ai-summary-disclaimer {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.ai-summary-section {
+  margin-top: var(--spacing-4);
+}
+
+.ai-summary-section p {
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+  margin: 0 0 var(--spacing-3);
+}
+
+.ai-summary-section p:last-child {
+  margin-bottom: 0;
+}
+
+.ai-summary-references {
+  margin-left: var(--spacing-1);
+  white-space: nowrap;
+}
+
+.ai-summary-references a {
+  color: var(--color-text-link);
+}
+
+.ai-summary-stale,
+.ai-summary-status {
+  padding: var(--spacing-3);
+  border-radius: var(--border-radius-sm);
+}
+
+.ai-summary-stale {
+  border: var(--border-width) solid var(--color-warning);
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+
+.ai-summary-status {
+  border: var(--border-width) solid var(--color-primary-200);
+  background: var(--color-primary-50);
+  color: var(--color-text-secondary);
+}
+
+.ai-summary-preview {
+  margin-top: var(--spacing-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ai-summary:has(.ai-summary-full[open]) .ai-summary-preview {
+  display: none;
+}
+
+.ai-summary-full summary {
+  margin-top: var(--spacing-3);
+  cursor: pointer;
+  color: var(--color-text-link);
+  font-size: var(--font-size-sm);
+  list-style: none;
+}
+
+.ai-summary-full summary::-webkit-details-marker {
+  display: none;
+}
+
+.ai-summary-full summary::before {
+  content: "▸";
+  margin-right: 0.35rem;
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+
+.ai-summary-full[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.ai-summary-full[open] .ai-summary-toggle-closed,
+.ai-summary-full:not([open]) .ai-summary-toggle-open {
+  display: none;
+}

@@ -103,6 +103,7 @@ class TopicsController < ApplicationController
 
     @topic_mailing_lists = @topic.mailing_lists.to_a
     @topic_is_multi_list = @topic_mailing_lists.size > 1
+    @ai_summary_state = AiSummary::TopicState.call(topic: @topic)
 
     if @topic_is_multi_list
       msg_ids = @messages.map(&:id)

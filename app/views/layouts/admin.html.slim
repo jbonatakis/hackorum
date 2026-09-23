@@ -39,5 +39,8 @@
       = link_to admin_features_path, class: admin_nav_link_class(:features) do
         i.fas.fa-flag
         span Features
+      = link_to admin_ai_summary_operations_path, class: admin_nav_link_class(:ai_summaries) do
+        i.fas.fa-wand-magic-sparkles
+        span Summaries
 
 = render template: 'layouts/application'

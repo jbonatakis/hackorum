@@ -232,6 +232,9 @@
   .thread-notes-container
     = render "notes/note_stack", topic: @topic, message: nil, notes: thread_notes
 
+- unless @ai_summary_state.status == :none
+  = render "ai_summary", topic: @topic, state: @ai_summary_state, message_numbers: @message_numbers
+
 .messages-container.flat.asc data-controller="batch-loader" data-batch-loader-url-value=message_batch_topic_path(@topic) data-batch-loader-signed-in-value=(user_signed_in? ? true : false)
   - last_message = @messages.last
   - if last_message.present?
@@ -248,6 +251,8 @@
   - collapse_read = !user_signed_in? || current_user.collapse_read_messages?
   - first_unread_found = false
   - unread_inline_count = 0
+  - summary_covered_message_ids = @ai_summary_state.summary&.source_message_ids&.to_set
+  - summary_boundary_rendered = false
   - @messages.each do |message|
     - is_read = user_signed_in? && @read_message_ids&.dig(message.id)
     - is_first_unread = false
@@ -262,7 +267,12 @@
     - else
       - render_mode = :shell
     - branch_index = @message_branch_index&.dig(message.id)
-    = render 'message', message: message, number: @message_numbers[message.id], is_first_unread: is_first_unread, branch_index: branch_index, render_mode: render_mode, is_read: !!is_read, collapse_read: collapse_read
+    - newer_than_summary = summary_covered_message_ids && message.sent? && !summary_covered_message_ids.include?(message.id)
+    - if newer_than_summary && !summary_boundary_rendered
+      .summary-coverage-divider role="separator" aria-label="Messages newer than the current topic summary"
+        span Newer than summary
+      - summary_boundary_rendered = true
+    = render 'message', message: message, number: @message_numbers[message.id], is_first_unread: is_first_unread, branch_index: branch_index, render_mode: render_mode, is_read: !!is_read, collapse_read: collapse_read, newer_than_summary: newer_than_summary
 
 .topic-navigation
   = link_to "← Back to Topics", topics_path, class: "back-link"
